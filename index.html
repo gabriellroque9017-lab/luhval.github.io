@@ -294,6 +294,28 @@ body.editing .del-sec-wrap{display:flex;}
 .btn-green{background:#41724b!important;border-color:#41724b!important;color:#fff!important;}
 .btn-red{background:#a8402f!important;border-color:#a8402f!important;color:#fff!important;}
 #dsCount{font-family:var(--mono);font-size:56px;color:var(--clay);text-align:center;margin:14px 0 6px;}
+.grid{position:relative;}
+.tile.addpair{border:2px dashed var(--clay);background:rgba(169,102,63,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:1;transform:none;}
+.tile.addpair span{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);text-align:center;line-height:1.9;}
+.tile.addpair:hover{background:rgba(169,102,63,.14);}
+#dropbar{position:absolute;width:3px;border-radius:2px;background:var(--clay);display:none;z-index:6;pointer-events:none;box-shadow:0 0 10px rgba(169,102,63,.65);}
+.grid .tile,.grid .pair{transition:transform .16s var(--ease),opacity 1s var(--ease);}
+.shove{transform:translateX(12px)!important;}
+.drag-src{opacity:.35!important;}
+body.dragging-photos{user-select:none;-webkit-user-select:none;}
+.dragghost{position:fixed;z-index:600;pointer-events:none;display:flex;gap:4px;padding:4px;background:rgba(244,241,234,.92);
+  box-shadow:0 18px 44px rgba(0,0,0,.35);border:1px solid var(--line);transform:rotate(-2deg);}
+.gthumb{width:104px;height:130px;background-size:cover;background-position:center;}
+.pairbox{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
+.pairslot{border:1.5px dashed var(--line);aspect-ratio:4/5;position:relative;cursor:pointer;background:#fff;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;text-align:center;}
+.pairslot span{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);padding:0 10px;line-height:1.8;}
+.pairslot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+.pairslot.has img{display:block;} .pairslot.has span{display:none;}
+.pairslot.has::after{content:"trocar";position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:#fff;background:rgba(18,15,13,.55);padding:3px 7px;}
+.pairt{width:100%;margin-top:8px;padding:9px 11px;border:1px solid var(--line);font-family:var(--mono);font-size:12px;background:#fff;color:var(--ink);box-sizing:border-box;}
+#pairGo:disabled{opacity:.45;cursor:not-allowed;}
 #dropzone{position:fixed;inset:0;z-index:350;background:rgba(18,15,13,.86);display:none;align-items:center;justify-content:center;color:var(--paper);text-align:center;}
 #dropzone.show{display:flex;}
 #dropzone .inner{border:2px dashed rgba(244,241,234,.6);padding:64px 84px;}
@@ -512,6 +534,24 @@ body.editing .del-sec-wrap{display:flex;}
   </div>
 </div>
 <div id="dropzone"><div class="inner"><div class="big">Solte as fotos aqui</div><div class="sm">Envio em qualidade original · JPG, PNG, WEBP</div><div class="upload-list" id="uploadList"></div></div></div>
+<div class="modal" id="pairModal">
+  <div class="box" style="max-width:640px">
+    <button class="close-x" id="pairClose">✕</button>
+    <h3>Adicionar foto dupla</h3>
+    <div class="sub">As duas fotos ficam lado a lado, ocupando uma linha inteira — como a “adega”. A dupla nasce no fim da seção atual; depois é só arrastá-la para a posição.</div>
+    <div class="pairbox">
+      <div>
+        <div class="pairslot" id="psL"><span>Adicionar foto<br>da esquerda</span><img alt=""></div>
+        <input class="pairt" id="ptL" placeholder="Título da foto da esquerda (opcional)" autocomplete="off">
+      </div>
+      <div>
+        <div class="pairslot" id="psR"><span>Adicionar foto<br>da direita</span><img alt=""></div>
+        <input class="pairt" id="ptR" placeholder="Título da foto da direita (opcional)" autocomplete="off">
+      </div>
+    </div>
+    <div class="actions"><button class="cancel" id="pairCancel">Cancelar</button><button class="go" id="pairGo" disabled>Confirmar foto dupla</button></div>
+  </div>
+</div>
 <div class="modal" id="inputModal">
   <div class="box">
     <button class="close-x" id="imClose">✕</button>
@@ -635,9 +675,7 @@ function makeTile(f,pos){
   const img=document.createElement("img"); img.src=f.arquivo; img.alt=f.titulo||"Foto"; img.loading="lazy"; img.decoding="async"; tile.appendChild(img);
   const cap=document.createElement("div"); cap.className="cap"; cap.innerHTML='<div class="t">'+esc(f.titulo||"")+'</div>'; tile.appendChild(cap);
   const ec=document.createElement("div"); ec.className="edit-ctrl";
-  const mv=(dir)=>{ const k=visible.findIndex(v=>v._i===f._i); const j=k+dir; if(j<0||j>=visible.length)return;
-    const a=f._i,b=visible[j]._i; const tmp=DATA.fotos[a]; DATA.fotos[a]=DATA.fotos[b]; DATA.fotos[b]=tmp;
-    markDirty(); renderGrid(); };
+  const mv=(dir)=>moveUnit(f._i,dir);
   const bl=document.createElement("button"); bl.textContent="◀"; bl.title="Trocar com a anterior";
   bl.onclick=e=>{ e.stopPropagation(); mv(-1); };
   const br=document.createElement("button"); br.textContent="▶"; br.title="Trocar com a próxima";
@@ -649,14 +687,8 @@ function makeTile(f,pos){
   sel.onclick=e=>e.stopPropagation(); sel.onchange=()=>{ DATA.fotos[f._i].categoria=sel.value; markDirty(); renderGrid(); };
   const del=document.createElement("button"); del.textContent="Excluir"; del.onclick=e=>{ e.stopPropagation(); removePhoto(f._i); };
   ec.appendChild(bl); ec.appendChild(br); ec.appendChild(rn); ec.appendChild(sel); ec.appendChild(del); tile.appendChild(ec);
-  tile.onclick=()=>openLightbox(pos);
-  if(document.body.classList.contains("editing")){
-    tile.draggable=true;
-    tile.addEventListener("dragstart",e=>{ tile.classList.add("dragging"); e.dataTransfer.setData("text/plain",f._i); });
-    tile.addEventListener("dragend",()=>tile.classList.remove("dragging"));
-    tile.addEventListener("dragover",e=>e.preventDefault());
-    tile.addEventListener("drop",e=>{ e.preventDefault(); e.stopPropagation(); reorder(+e.dataTransfer.getData("text/plain"),f._i); });
-  }
+  tile.onclick=()=>{ if(Date.now()-(window.__dragEnd||0)<350)return; openLightbox(pos); };
+  if(document.body.classList.contains("editing")){ tile.querySelector("img").draggable=false; initDrag(tile,f); }
   return tile;
 }
 function renderGrid(){
@@ -664,7 +696,7 @@ function renderGrid(){
   const list=(DATA.fotos||[]).map((f,i)=>({...f,_i:i})).filter(f=>currentFilter==="Todos"||f.categoria===currentFilter);
   visible=list;
   document.getElementById("photoCount").textContent=String(list.length).padStart(2,"0")+" imagens";
-  if(!list.length){ grid.innerHTML='<div class="empty">'+(currentFilter==="Obras"?"Em breve — obras da artista.":"Nenhuma foto nesta categoria ainda.")+'</div>'; return; }
+  if(!list.length){ grid.innerHTML='<div class="empty">'+(currentFilter==="Obras"?"Em breve — obras da artista.":"Nenhuma foto nesta categoria ainda.")+'</div>'; }
   let k=0;
   while(k<list.length){
     const f=list[k];
@@ -674,6 +706,13 @@ function renderGrid(){
       grid.appendChild(wrap); k+=2;
     } else { grid.appendChild(makeTile(f,k)); k++; }
   }
+  if(document.body.classList.contains("editing")){
+    const ap=document.createElement("div"); ap.className="tile addpair vis";
+    ap.innerHTML='<span>＋<br>adicionar<br>foto dupla</span>';
+    ap.onclick=(e)=>{ e.stopPropagation(); openPair(); };
+    grid.appendChild(ap);
+  }
+  const bar=document.createElement("div"); bar.id="dropbar"; grid.appendChild(bar);
   setupReveal();
 }
 let revealIO=null;
@@ -851,7 +890,133 @@ document.getElementById("dsConfirm").onclick=()=>{ const sec=currentFilter;
   markDirty(); closeDelSec(); renderFilters(); renderGrid();
   toast("Seção excluída daqui. Clique em Publicar para valer no site."); };
 
-function reorder(from,toIdx){ if(from===toIdx)return; const arr=DATA.fotos; const [item]=arr.splice(from,1); let t=toIdx>from?toIdx-1:toIdx; if(t<0)t=0; if(t>arr.length)t=arr.length; arr.splice(t,0,item); markDirty(); renderGrid(); }
+/* ===== unidades: foto solta ou dupla (bloco indivisível) ===== */
+function getUnits(){ const u=[]; let k=0; while(k<visible.length){ const f=visible[k];
+  if(f.dupla&&k+1<visible.length&&visible[k+1].dupla===f.dupla){ u.push([visible[k],visible[k+1]]); k+=2; }
+  else{ u.push([visible[k]]); k++; } } return u; }
+function applyUnits(units){ const slots=visible.map(v=>v._i); const flat=units.flat();
+  flat.forEach((it,ix)=>{ const {_i,...rest}=it; DATA.fotos[slots[ix]]=rest; });
+  markDirty(); renderGrid(); }
+function unitIndexOf(gi){ const us=getUnits(); for(let i=0;i<us.length;i++) if(us[i].some(x=>x._i===gi)) return i; return -1; }
+function moveUnit(gi,dir){ const us=getUnits(); const i=unitIndexOf(gi); const j=i+dir;
+  if(i<0||j<0||j>=us.length)return; const t=us[i]; us[i]=us[j]; us[j]=t; applyUnits(us); }
+function placeUnit(gi,insert){ const us=getUnits(); const i=unitIndexOf(gi); if(i<0)return;
+  if(insert===i||insert===i+1)return; const [u]=us.splice(i,1); if(insert>i)insert--; us.splice(insert,0,u); applyUnits(us); }
+
+/* ===== arrastar: auto-rolagem, indicador de destino, regra da dupla ===== */
+let drag=null;
+function domUnits(){ return [...document.querySelectorAll('#grid > .tile:not(.addpair), #grid > .pair')]; }
+function initDrag(tile,f){
+  tile.style.touchAction="pan-y";
+  tile.addEventListener("contextmenu",e=>{ if(document.body.classList.contains("editing"))e.preventDefault(); });
+  tile.addEventListener("pointerdown",e=>{
+    if(!document.body.classList.contains("editing"))return;
+    if(e.target.closest(".edit-ctrl"))return;
+    const sx=e.clientX, sy=e.clientY, pid=e.pointerId, pt=e.pointerType; let lifted=false, timer=null;
+    const lift=(x,y)=>{ if(lifted)return; lifted=true; cleanup(); startDrag(f,pid,x,y); };
+    if(pt!=="mouse") timer=setTimeout(()=>lift(sx,sy),230);
+    const mvh=(ev)=>{ if(lifted)return;
+      const dx=Math.abs(ev.clientX-sx), dy=Math.abs(ev.clientY-sy);
+      if(pt==="mouse"){ if(dx>6||dy>6) lift(ev.clientX,ev.clientY); }
+      else if(dx>10||dy>10){ clearTimeout(timer); cleanup(); } };
+    const uph=()=>{ clearTimeout(timer); cleanup(); };
+    const cleanup=()=>{ window.removeEventListener("pointermove",mvh); window.removeEventListener("pointerup",uph); window.removeEventListener("pointercancel",uph); };
+    window.addEventListener("pointermove",mvh); window.addEventListener("pointerup",uph); window.addEventListener("pointercancel",uph);
+  });
+}
+function startDrag(f,pid,px,py){
+  const us=getUnits(); const ui=unitIndexOf(f._i); if(ui<0)return;
+  const ghost=document.createElement("div"); ghost.className="dragghost";
+  us[ui].forEach(it=>{ const im=document.createElement("div"); im.className="gthumb";
+    im.style.backgroundImage="url('"+String(it.arquivo).replace(/'/g,"%27")+"')"; ghost.appendChild(im); });
+  document.body.appendChild(ghost);
+  drag={f,ghost,scroller:document.getElementById("p2"),px,py,insert:null,raf:null,srcUi:ui};
+  document.body.classList.add("dragging-photos");
+  const src=domUnits()[ui]; if(src)src.classList.add("drag-src");
+  if(navigator.vibrate){ try{navigator.vibrate(12);}catch(_){}}
+  const move=(ev)=>{ if(ev.pointerId!==pid)return; drag.px=ev.clientX; drag.py=ev.clientY; };
+  const tmove=(ev)=>{ ev.preventDefault(); };
+  const done=(commit)=>{ endDrag(commit);
+    window.removeEventListener("pointermove",move); window.removeEventListener("pointerup",up);
+    window.removeEventListener("pointercancel",cancel); window.removeEventListener("touchmove",tmove); };
+  const up=(ev)=>{ if(ev.pointerId!==pid)return; done(true); };
+  const cancel=()=>done(false);
+  window.addEventListener("pointermove",move); window.addEventListener("pointerup",up);
+  window.addEventListener("pointercancel",cancel);
+  window.addEventListener("touchmove",tmove,{passive:false});
+  const loop=()=>{ if(!drag)return; dragTick(); drag.raf=requestAnimationFrame(loop); }; loop();
+}
+function dragTick(){
+  const {ghost,scroller,px,py}=drag;
+  ghost.style.left=(px-56)+"px"; ghost.style.top=(py-70)+"px";
+  const r=scroller.getBoundingClientRect(), zone=96;
+  if(py<r.top+zone) scroller.scrollTop-=Math.ceil((1-Math.max(0,py-r.top)/zone)*16);
+  else if(py>r.bottom-zone) scroller.scrollTop+=Math.ceil((1-Math.max(0,r.bottom-py)/zone)*16);
+  const els=domUnits(); const grid=document.getElementById("grid"); const bar=document.getElementById("dropbar");
+  if(!els.length){ if(bar)bar.style.display="none"; drag.insert=0; return; }
+  const gr=grid.getBoundingClientRect(); const lx=px-gr.left, ly=py-gr.top; /* coords no layout, ignorando transforms */
+  let ins=els.length;
+  for(let i=0;i<els.length;i++){ const e=els[i]; const t=e.offsetTop,l=e.offsetLeft,w=e.offsetWidth,h=e.offsetHeight;
+    if(ly<t){ ins=i; break; }
+    if(ly<=t+h){ if(lx<l+w/2){ ins=i; break; } ins=i+1; } }
+  drag.insert=ins;
+  const gap=parseFloat(getComputedStyle(grid).columnGap)||18;
+  let ref,left;
+  if(ins<els.length){ ref=els[ins]; left=ref.offsetLeft-gap/2-1; }
+  else{ ref=els[els.length-1]; left=ref.offsetLeft+ref.offsetWidth+gap/2-1; }
+  bar.style.display="block"; bar.style.left=left+"px";
+  bar.style.top=ref.offsetTop+"px"; bar.style.height=ref.offsetHeight+"px";
+  const rowTop=ref.offsetTop;
+  els.forEach((el,i)=>el.classList.toggle("shove", i>=ins && Math.abs(el.offsetTop-rowTop)<4 && i!==drag.srcUi));
+}
+function endDrag(commit){
+  const d=drag; if(!d)return; drag=null;
+  if(d.raf)cancelAnimationFrame(d.raf);
+  d.ghost.remove(); document.body.classList.remove("dragging-photos");
+  const bar=document.getElementById("dropbar"); if(bar)bar.style.display="none";
+  domUnits().forEach(el=>el.classList.remove("drag-src","shove"));
+  window.__dragEnd=Date.now();
+  if(commit&&d.insert!=null) placeUnit(d.f._i,d.insert);
+}
+
+/* ===== criar foto dupla ===== */
+let pairSel={L:null,R:null};
+function openPair(){ if(!gh.connected){ toast("Conecte-se ao GitHub primeiro."); openConnect(); return; }
+  pairSel={L:null,R:null};
+  ["L","R"].forEach(s=>{ const box=document.getElementById("ps"+s); box.classList.remove("has");
+    box.querySelector("img").src=""; document.getElementById("pt"+s).value=""; });
+  updPair(); document.getElementById("pairModal").classList.add("open"); }
+function closePair(){ document.getElementById("pairModal").classList.remove("open"); }
+function pickPair(side){ const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
+  inp.onchange=()=>{ const f=inp.files[0]; if(!f)return; pairSel[side]=f;
+    const box=document.getElementById("ps"+side); box.querySelector("img").src=URL.createObjectURL(f);
+    box.classList.add("has"); updPair(); };
+  inp.click(); }
+function updPair(){ document.getElementById("pairGo").disabled=!(pairSel.L&&pairSel.R); }
+async function uploadOne(file){ const b64=await fileToBase64(file); const safe=uniqueName(file.name); const path="fotos/"+safe;
+  const r=await ghFetch("/repos/"+gh.owner+"/"+gh.repo+"/contents/"+path,{method:"PUT",body:JSON.stringify({message:"Adiciona foto "+safe,content:b64,branch:gh.branch})});
+  if(!r.ok){ const j=await r.json().catch(()=>({})); throw new Error(j.message||("HTTP "+r.status)); }
+  const j=await r.json().catch(()=>({})); return {path,sha:(j.content&&j.content.sha)||null}; }
+document.getElementById("psL").onclick=()=>pickPair("L");
+document.getElementById("psR").onclick=()=>pickPair("R");
+document.getElementById("pairCancel").onclick=closePair;
+document.getElementById("pairClose").onclick=closePair;
+document.getElementById("pairGo").onclick=async()=>{
+  if(!(pairSel.L&&pairSel.R))return; const btn=document.getElementById("pairGo");
+  btn.disabled=true; const old=btn.textContent; btn.textContent="Enviando…";
+  const sec=(DATA.categorias||[]).includes(currentFilter)?currentFilter:((DATA.categorias||[])[0]||"Fotografias");
+  let up1=null;
+  try{ up1=await uploadOne(pairSel.L); const up2=await uploadOne(pairSel.R);
+    const dup="p"+Date.now().toString(36);
+    const tL=document.getElementById("ptL").value.trim()||prettyName(pairSel.L.name);
+    const tR=document.getElementById("ptR").value.trim()||prettyName(pairSel.R.name);
+    DATA.fotos.push({arquivo:up1.path,categoria:sec,titulo:tL,dupla:dup});
+    DATA.fotos.push({arquivo:up2.path,categoria:sec,titulo:tR,dupla:dup});
+    markDirty(); renderGrid(); closePair(); toast("Dupla criada no fim da seção. Clique em Publicar.");
+  }catch(e){ if(up1&&up1.sha){ try{ await ghFetch("/repos/"+gh.owner+"/"+gh.repo+"/contents/"+up1.path,
+      {method:"DELETE",body:JSON.stringify({message:"Desfaz dupla incompleta",sha:up1.sha,branch:gh.branch})}); }catch(_){}}
+    toast("Falha ao criar a dupla: "+e.message); }
+  btn.textContent=old; updPair(); };
 document.getElementById("btnPublish").onclick=publish;
 async function publish(){ if(!gh.connected){ toast("Conecte-se primeiro."); return; } if(!dirty){ toast("Nada para publicar."); return; }
   toast("Publicando…"); try{ let sha=null; const g=await ghFetch("/repos/"+gh.owner+"/"+gh.repo+"/contents/fotos.json?ref="+gh.branch); if(g.ok)sha=(await g.json()).sha;
