@@ -199,6 +199,27 @@ body.editing .tile:hover img{transform:none;}
   background-size:250% 100%;animation:shim 7s linear infinite;z-index:2;}
 @keyframes shim{from{background-position:120% 0;}to{background-position:-120% 0;}}
 .portrait .mk{position:absolute;bottom:14px;left:14px;z-index:3;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#fff;text-transform:uppercase;}
+.port-edit{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;gap:8px;align-items:center;justify-content:center;
+  background:rgba(18,15,13,.42);backdrop-filter:blur(2px);padding:14px;}
+body.editing #portEdit{display:flex;}
+.port-edit .row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:100%;}
+.port-edit button{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  background:rgba(244,241,234,.95);border:1px solid var(--ink);color:var(--ink);padding:7px 10px;}
+.port-edit .cur{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#fff;text-transform:uppercase;}
+.port-edit .thumbs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.port-edit .th{width:44px;height:56px;background-size:cover;background-position:center;border:2px solid transparent;position:relative;cursor:pointer;}
+.port-edit .th.sel{border-color:var(--clay);}
+.port-edit .th b{position:absolute;top:-6px;right:-6px;background:#a8402f;color:#fff;border-radius:50%;width:16px;height:16px;
+  font-size:11px;line-height:16px;text-align:center;font-family:var(--mono);}
+.edit-text-btn{display:none;margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  cursor:pointer;background:none;border:1px solid var(--clay);color:var(--clay);padding:10px 16px;transition:.25s;}
+body.editing .edit-text-btn{display:inline-block;}
+.edit-text-btn:hover{background:var(--clay);color:#fff;}
+#textModal textarea{width:100%;min-height:120px;padding:11px 13px;border:1px solid var(--line);background:#fff;
+  font-family:var(--sans);font-size:14px;color:var(--ink);line-height:1.5;box-sizing:border-box;margin-bottom:8px;resize:vertical;}
+#textModal .addp{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  background:none;border:1px dashed var(--clay);color:var(--clay);padding:7px 12px;margin-bottom:6px;}
+#textModal .delp{font-family:var(--mono);font-size:10px;color:#a8402f;background:none;border:0;cursor:pointer;margin-bottom:10px;}
 .sobre-body h3{font-family:var(--display);font-style:italic;font-size:clamp(30px,4.4vw,50px);font-weight:400;line-height:1;margin-bottom:24px;}
 .sobre-body p{color:var(--ink-soft);margin-bottom:18px;font-size:16px;}
 .quote{max-width:820px;margin:clamp(56px,9vh,90px) auto clamp(20px,4vh,40px);text-align:center;padding:0 20px;}
@@ -443,17 +464,15 @@ body.dragging-photos{user-select:none;-webkit-user-select:none;}
         <div class="sec-no">Rio de Janeiro · BR</div>
       </div>
       <div class="sobre-grid">
-        <div class="portrait">
-          <img src="assets/sobre-1.jpg" class="on" alt="Ana Luiza Val">
-          <img src="assets/sobre-2.jpg" alt="Ana Luiza Val">
-          <img src="assets/sobre-3.jpg" alt="Ana Luiza Val">
+        <div class="portrait" id="portrait">
           <div class="shimmer"></div>
-          <span class="mk">Ana Luiza Val</span>
+          <span class="mk" id="sobreMk">Ana Luiza Val</span>
+          <div class="port-edit" id="portEdit"></div>
         </div>
         <div class="sobre-body">
           <h3 id="sobreNome">Ana Luiza Val</h3>
-          <p>Ana Luiza, nascida em 26 de outubro de 2006, no Rio de Janeiro. Desde a infância, a arte fez parte da maneira como ela descobriu o mundo. Entre as mãos marcadas pela tinta e a curiosidade de enxergar a vida através de uma câmera, aprendeu que criar é, antes de tudo, um exercício de sentir. Foi nesse encontro entre cores, luz e imaginação que nasceu o olhar que hoje conduz o seu trabalho.</p>
-          <p>Acredita que a criatividade nasce do olhar atento. Mais do que registrar imagens, busca construir experiências visuais que traduzam essência, despertem sentimentos e estabeleçam conexões autênticas.</p>
+          <div id="sobreTextos"></div>
+          <button class="edit-text-btn" id="btnEditText">✎ Editar texto</button>
         </div>
       </div>
       <div class="pagenav">
@@ -534,6 +553,16 @@ body.dragging-photos{user-select:none;-webkit-user-select:none;}
   </div>
 </div>
 <div id="dropzone"><div class="inner"><div class="big">Solte as fotos aqui</div><div class="sm">Envio em qualidade original · JPG, PNG, WEBP</div><div class="upload-list" id="uploadList"></div></div></div>
+<div class="modal" id="textModal">
+  <div class="box" style="max-width:620px">
+    <button class="close-x" id="txClose">✕</button>
+    <h3>Editar texto do “Sobre mim”</h3>
+    <div class="sub">Cada bloco é um parágrafo. Você pode adicionar ou remover parágrafos.</div>
+    <div id="txList"></div>
+    <button class="addp" id="txAdd">+ adicionar parágrafo</button>
+    <div class="actions"><button class="cancel" id="txCancel">Cancelar</button><button class="go" id="txGo">Salvar</button></div>
+  </div>
+</div>
 <div class="modal" id="pairModal">
   <div class="box" style="max-width:640px">
     <button class="close-x" id="pairClose">✕</button>
@@ -587,6 +616,10 @@ const DEFAULTS = {
   cidade:"Rio de Janeiro",
   categorias:["Fotografias","Obras"],
   contato:{ whatsapp:"5524993122505", instagram:"analuizavalfotografia", email:"analuiza.val.souza@gmail.com" },
+  sobre:{ nome:"Ana Luiza Val",
+    fotos:["assets/sobre-1.jpg","assets/sobre-2.jpg","assets/sobre-3.jpg"],
+    textos:["Ana Luiza, nascida em 26 de outubro de 2006, no Rio de Janeiro. Desde a infância, a arte fez parte da maneira como ela descobriu o mundo. Entre as mãos marcadas pela tinta e a curiosidade de enxergar a vida através de uma câmera, aprendeu que criar é, antes de tudo, um exercício de sentir. Foi nesse encontro entre cores, luz e imaginação que nasceu o olhar que hoje conduz o seu trabalho.",
+      "Acredita que a criatividade nasce do olhar atento. Mais do que registrar imagens, busca construir experiências visuais que traduzam essência, despertem sentimentos e estabeleçam conexões autênticas."] },
   fotos:[
     {arquivo:"fotos/foto-04.jpg", categoria:"Fotografias", titulo:"Fim de tarde"},
     {arquivo:"fotos/foto-15.jpg", categoria:"Fotografias", titulo:"Espelho d'água"},
@@ -644,7 +677,7 @@ function render(){
   (function(){ const parts=esc(t).trim().split(" "); const last=parts.pop();
     document.getElementById("p1Name").innerHTML=(parts.length?parts.join(" ")+" ":"")+'<span class="valkey">'+last+"</span>"; })();
   document.getElementById("p1Eyebrow").textContent=DATA.eyebrow||DEFAULTS.eyebrow;
-  document.getElementById("sobreNome").textContent=t;
+  document.getElementById("sobreNome").textContent=t; renderSobre();
   document.getElementById("year").textContent=new Date().getFullYear();
   renderContato(); renderFilters(); renderGrid();
 }
@@ -757,9 +790,72 @@ const _tw=document.getElementById("toWork3"); if(_tw)_tw.onclick=()=>goFocus(1);
 const _ta=document.getElementById("toAboutMini"); if(_ta)_ta.onclick=(e)=>{e.stopPropagation();goFocus(2);};
 
 /* ================= retrato: alterna 3 fotos a cada 10s ================= */
-(function(){ const imgs=document.querySelectorAll(".portrait img"); if(imgs.length<2)return; let k=0;
-  setInterval(()=>{ imgs[k].classList.remove("on"); k=(k+1)%imgs.length; imgs[k].classList.add("on"); },10000);
-})();
+let sobreTimer=null;
+function renderSobre(){
+  const s=DATA.sobre||DEFAULTS.sobre; const port=document.getElementById("portrait");
+  document.getElementById("sobreMk").textContent=DATA.titulo||s.nome||"";
+  // imagens (mantêm o efeito: crossfade + zoom + shimmer)
+  [...port.querySelectorAll("img")].forEach(im=>im.remove());
+  const shim=port.querySelector(".shimmer");
+  (s.fotos||[]).forEach((src,i)=>{ const im=document.createElement("img"); im.src=src; im.alt=DATA.titulo||"Ana Luiza Val";
+    if(i===0)im.classList.add("on"); port.insertBefore(im,shim); });
+  // textos
+  const box=document.getElementById("sobreTextos"); box.innerHTML="";
+  (s.textos||[]).forEach(t=>{ const p=document.createElement("p"); p.textContent=t; box.appendChild(p); });
+  // rotação
+  if(sobreTimer)clearInterval(sobreTimer);
+  const imgs=port.querySelectorAll("img"); let k=0;
+  if(imgs.length>1) sobreTimer=setInterval(()=>{ imgs[k].classList.remove("on"); k=(k+1)%imgs.length; imgs[k].classList.add("on"); },10000);
+  renderPortEdit();
+}
+function renderPortEdit(){
+  const wrap=document.getElementById("portEdit"); if(!wrap)return; wrap.innerHTML="";
+  if(!document.body.classList.contains("editing"))return;
+  const s=DATA.sobre; const cur=document.createElement("div"); cur.className="cur";
+  cur.textContent=(s.fotos||[]).length+" foto(s) na rotação"; wrap.appendChild(cur);
+  const th=document.createElement("div"); th.className="thumbs";
+  (s.fotos||[]).forEach((src,i)=>{ const d=document.createElement("div"); d.className="th";
+    d.style.backgroundImage="url('"+String(src).replace(/'/g,"%27")+"')"; d.title="Trocar esta foto";
+    d.onclick=(e)=>{ e.stopPropagation(); swapSobrePhoto(i); };
+    if((s.fotos||[]).length>1){ const x=document.createElement("b"); x.textContent="×"; x.title="Remover";
+      x.onclick=(e)=>{ e.stopPropagation(); if(confirm("Remover esta foto da rotação?")){ s.fotos.splice(i,1); markDirty(); renderSobre(); } };
+      d.appendChild(x); }
+    th.appendChild(d); });
+  wrap.appendChild(th);
+  const row=document.createElement("div"); row.className="row";
+  const add=document.createElement("button"); add.textContent="+ adicionar foto"; add.onclick=(e)=>{ e.stopPropagation(); addSobrePhoto(); };
+  const et=document.createElement("button"); et.textContent="✎ editar texto"; et.onclick=(e)=>{ e.stopPropagation(); openTextModal(); };
+  row.appendChild(add); row.appendChild(et); wrap.appendChild(row);
+}
+async function swapSobrePhoto(i){ if(!gh.connected){ toast("Conecte-se ao GitHub primeiro."); openConnect(); return; }
+  const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
+  inp.onchange=async()=>{ const f=inp.files[0]; if(!f)return; toast("Enviando foto…");
+    try{ const up=await uploadOne(f); DATA.sobre.fotos[i]=up.path; markDirty(); renderSobre(); toast("Foto trocada. Clique em Publicar."); }
+    catch(e){ toast("Falha: "+e.message); } };
+  inp.click(); }
+async function addSobrePhoto(){ if(!gh.connected){ toast("Conecte-se ao GitHub primeiro."); openConnect(); return; }
+  const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
+  inp.onchange=async()=>{ const f=inp.files[0]; if(!f)return; toast("Enviando foto…");
+    try{ const up=await uploadOne(f); DATA.sobre.fotos.push(up.path); markDirty(); renderSobre(); toast("Foto adicionada à rotação. Publique."); }
+    catch(e){ toast("Falha: "+e.message); } };
+  inp.click(); }
+/* editar texto */
+function openTextModal(){ const list=document.getElementById("txList"); list.innerHTML="";
+  (DATA.sobre.textos||[]).forEach(t=>addTxRow(t));
+  document.getElementById("textModal").classList.add("open"); }
+function addTxRow(val){ const list=document.getElementById("txList");
+  const wrap=document.createElement("div"); const ta=document.createElement("textarea"); ta.value=val||"";
+  const del=document.createElement("button"); del.className="delp"; del.textContent="remover parágrafo";
+  del.onclick=()=>{ if(list.children.length>1)wrap.remove(); else toast("Deixe ao menos um parágrafo."); };
+  wrap.appendChild(ta); wrap.appendChild(del); list.appendChild(wrap); }
+document.getElementById("txAdd").onclick=()=>addTxRow("");
+document.getElementById("txClose").onclick=()=>document.getElementById("textModal").classList.remove("open");
+document.getElementById("txCancel").onclick=()=>document.getElementById("textModal").classList.remove("open");
+document.getElementById("txGo").onclick=()=>{ const vals=[...document.querySelectorAll("#txList textarea")].map(t=>t.value.trim()).filter(Boolean);
+  if(!vals.length){ toast("Escreva ao menos um parágrafo."); return; }
+  DATA.sobre.textos=vals; markDirty(); renderSobre();
+  document.getElementById("textModal").classList.remove("open"); toast("Texto atualizado. Clique em Publicar."); };
+document.getElementById("btnEditText").onclick=openTextModal;
 
 /* ================= brilhos + chamas página 4 (cinemagraph) ================= */
 (function(){ const p4=document.getElementById("p4"); if(!p4)return;
@@ -813,7 +909,7 @@ function loadCreds(){ try{ Object.assign(gh,JSON.parse(localStorage.getItem("alv
 function saveCreds(){ localStorage.setItem("alv_gh",JSON.stringify({owner:gh.owner,repo:gh.repo,branch:gh.branch,token:gh.token})); }
 function updateStatus(){ const st=document.getElementById("edStatus"),tx=document.getElementById("edStatusText");
   if(gh.connected){ st.classList.add("ok"); tx.textContent=(dirty?"Alterações pendentes · ":"Conectado · ")+gh.owner+"/"+gh.repo; document.body.classList.add("editing"); }
-  else{ st.classList.remove("ok"); tx.textContent="Não conectado"; document.body.classList.remove("editing"); } renderFilters(); renderGrid(); }
+  else{ st.classList.remove("ok"); tx.textContent="Não conectado"; document.body.classList.remove("editing"); } renderFilters(); renderGrid(); renderPortEdit(); }
 function openConnect(){ document.getElementById("connectModal").classList.add("open"); }
 function closeConnect(){ document.getElementById("connectModal").classList.remove("open"); }
 document.getElementById("connectClose").onclick=closeConnect; document.getElementById("connectCancel").onclick=closeConnect;

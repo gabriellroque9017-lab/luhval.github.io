@@ -220,66 +220,18 @@
       "arquivo": "fotos/foto-42.jpg",
       "categoria": "Obras",
       "titulo": "Sob o céu de Ipanema, óleo sobre tela"
-    },
-    {
-      "arquivo": "fotos/vindima-vila-botane-2026-mrgkqyvt.png",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/vindima-vila-botane-2026-mrgkhcl5.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/vindima-vila-botane-2026-2-mrgkhgsl.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/vindima-vila-botane-2026-3-mrgkhe36.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/vindima-vila-botane-2026-mrgkhaku.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/img-5558-mrgludij.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima,Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/img-5423-mrgluffm.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/img-5465-mrgluin4.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/img-5422-mrglumfk.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima,Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/img-5467-mrglup9n.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/img-5433-mrglur3g.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
-    },
-    {
-      "arquivo": "fotos/img-5431-mrgluuw2.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Vindima, Vila Botané 2026"
     }
-  ]
+  ],
+  "sobre": {
+    "nome": "Ana Luiza Val",
+    "fotos": [
+      "assets/sobre-1.jpg",
+      "assets/sobre-2.jpg",
+      "assets/sobre-3.jpg"
+    ],
+    "textos": [
+      "Ana Luiza, nascida em 26 de outubro de 2006, no Rio de Janeiro. Desde a infância, a arte fez parte da maneira como ela descobriu o mundo. Entre as mãos marcadas pela tinta e a curiosidade de enxergar a vida através de uma câmera, aprendeu que criar é, antes de tudo, um exercício de sentir. Foi nesse encontro entre cores, luz e imaginação que nasceu o olhar que hoje conduz o seu trabalho.",
+      "Acredita que a criatividade nasce do olhar atento. Mais do que registrar imagens, busca construir experiências visuais que traduzam essência, despertem sentimentos e estabeleçam conexões autênticas."
+    ]
+  }
 }
