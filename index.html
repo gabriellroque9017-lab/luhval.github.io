@@ -283,6 +283,17 @@ body.editor-active #editorBar{display:flex;}
 .modal .actions .go{background:var(--ink);color:var(--paper);} .modal .actions .cancel{background:none;color:var(--ink);}
 .modal .note{font-size:12.5px;color:var(--ink-soft);line-height:1.55;margin-top:18px;border-left:2px solid var(--clay);padding-left:12px;} .modal .note b{color:var(--ink);}
 .modal .close-x{position:absolute;top:14px;right:16px;background:none;border:0;font-family:var(--mono);font-size:12px;cursor:pointer;color:var(--ink-soft);}
+.tile .edit-ctrl{flex-wrap:wrap;justify-content:flex-end;gap:4px;max-width:calc(100% - 16px);}
+.filters .addcat{border-style:dashed;color:var(--clay);border-color:var(--clay);font-weight:600;}
+.filters .addcat:hover{background:var(--clay);color:#fff;}
+.del-sec-wrap{display:none;justify-content:center;padding:6px 0 34px;}
+body.editing .del-sec-wrap{display:flex;}
+.del-sec{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;
+  background:none;border:1px solid #a8402f;color:#a8402f;padding:11px 20px;transition:.25s;}
+.del-sec:hover{background:#a8402f;color:#fff;}
+.btn-green{background:#41724b!important;border-color:#41724b!important;color:#fff!important;}
+.btn-red{background:#a8402f!important;border-color:#a8402f!important;color:#fff!important;}
+#dsCount{font-family:var(--mono);font-size:56px;color:var(--clay);text-align:center;margin:14px 0 6px;}
 #dropzone{position:fixed;inset:0;z-index:350;background:rgba(18,15,13,.86);display:none;align-items:center;justify-content:center;color:var(--paper);text-align:center;}
 #dropzone.show{display:flex;}
 #dropzone .inner{border:2px dashed rgba(244,241,234,.6);padding:64px 84px;}
@@ -390,6 +401,7 @@ body.editor-active #editorBar{display:flex;}
       </div>
       <div class="filters" id="filters"></div>
       <div class="grid" id="grid"></div>
+      <div class="del-sec-wrap"><button class="del-sec" id="btnDelSec">Excluir seção</button></div>
       <div class="pagenav">
       <div class="to-prev" id="toHome">
         <span class="big"><span class="arrowwrap"><span class="arrow"></span><svg class="suntip sun-l" viewBox="0 0 100 100" style="width:36px;height:36px"><circle cx="50" cy="50" r="19" fill="#e2a24b"/><g stroke="#e2a24b" stroke-width="4.5" stroke-linecap="round"><line x1="50" y1="24" x2="50" y2="11" transform="rotate(0 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(30 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(60 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(90 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(120 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(150 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(180 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(210 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(240 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(270 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(300 50 50)"/><line x1="50" y1="24" x2="50" y2="11" transform="rotate(330 50 50)"/></g><g stroke="#e2a24b" stroke-width="2.6" stroke-linecap="round"><line x1="50" y1="26" x2="50" y2="17" transform="rotate(15 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(45 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(75 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(105 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(135 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(165 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(195 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(225 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(255 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(285 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(315 50 50)"/><line x1="50" y1="26" x2="50" y2="17" transform="rotate(345 50 50)"/></g></svg></span><span>Home</span></span>
@@ -500,6 +512,31 @@ body.editor-active #editorBar{display:flex;}
   </div>
 </div>
 <div id="dropzone"><div class="inner"><div class="big">Solte as fotos aqui</div><div class="sm">Envio em qualidade original · JPG, PNG, WEBP</div><div class="upload-list" id="uploadList"></div></div></div>
+<div class="modal" id="inputModal">
+  <div class="box">
+    <button class="close-x" id="imClose">✕</button>
+    <h3 id="imTitle">Nome</h3>
+    <div class="sub" id="imSub"></div>
+    <label id="imLabel">Nome</label><input id="imInput" autocomplete="off">
+    <div class="actions"><button class="cancel" id="imCancel">Cancelar</button><button class="go" id="imGo">Salvar</button></div>
+  </div>
+</div>
+<div class="modal" id="delSecModal">
+  <div class="box">
+    <button class="close-x" id="dsClose">✕</button>
+    <h3>Excluir seção</h3>
+    <div class="sub" id="dsText"></div>
+    <div id="dsCount" style="display:none">5</div>
+    <div class="actions" id="dsA1">
+      <button class="cancel btn-red" id="dsNao">Não</button>
+      <button class="go btn-green" id="dsSim">Sim</button>
+    </div>
+    <div class="actions" id="dsA2" style="display:none">
+      <button class="cancel" id="dsCancel2">Não quero excluir</button>
+      <button class="go btn-red" id="dsConfirm">Confirmar</button>
+    </div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -583,16 +620,35 @@ function renderFilters(){
   const cats=[...(DATA.categorias||[])], box=document.getElementById("filters"); box.innerHTML="";
   cats.forEach(cat=>{ const b=document.createElement("button"); b.textContent=cat; if(cat===currentFilter)b.classList.add("on");
     b.onclick=()=>{currentFilter=cat; renderFilters(); renderGrid();}; box.appendChild(b); });
+  if(document.body.classList.contains("editing")){
+    const add=document.createElement("button"); add.textContent="+"; add.className="addcat"; add.title="Nova seção";
+    add.onclick=()=>openInput({title:"Nova seção",sub:"Ela vira uma nova aba de filtro no Work.",label:"Nome da seção",value:"",go:"Criar",
+      onGo:v=>{ v=v.trim(); if(!v)return toast("Digite um nome.");
+        if((DATA.categorias||[]).some(c=>c.toLowerCase()===v.toLowerCase()))return toast("Essa seção já existe.");
+        DATA.categorias.push(v); currentFilter=v; markDirty(); renderFilters(); renderGrid();
+        toast("Seção criada. Clique em Publicar para valer no site."); }});
+    box.appendChild(add);
+  }
 }
 function makeTile(f,pos){
   const tile=document.createElement("div"); tile.className="tile"; tile.dataset.i=f._i;
   const img=document.createElement("img"); img.src=f.arquivo; img.alt=f.titulo||"Foto"; img.loading="lazy"; img.decoding="async"; tile.appendChild(img);
   const cap=document.createElement("div"); cap.className="cap"; cap.innerHTML='<div class="t">'+esc(f.titulo||"")+'</div>'; tile.appendChild(cap);
   const ec=document.createElement("div"); ec.className="edit-ctrl";
+  const mv=(dir)=>{ const k=visible.findIndex(v=>v._i===f._i); const j=k+dir; if(j<0||j>=visible.length)return;
+    const a=f._i,b=visible[j]._i; const tmp=DATA.fotos[a]; DATA.fotos[a]=DATA.fotos[b]; DATA.fotos[b]=tmp;
+    markDirty(); renderGrid(); };
+  const bl=document.createElement("button"); bl.textContent="◀"; bl.title="Trocar com a anterior";
+  bl.onclick=e=>{ e.stopPropagation(); mv(-1); };
+  const br=document.createElement("button"); br.textContent="▶"; br.title="Trocar com a próxima";
+  br.onclick=e=>{ e.stopPropagation(); mv(1); };
+  const rn=document.createElement("button"); rn.textContent="✎"; rn.title="Renomear";
+  rn.onclick=e=>{ e.stopPropagation(); openInput({title:"Renomear foto",sub:"",label:"Título da foto",value:f.titulo||"",go:"Salvar",
+    onGo:v=>{ DATA.fotos[f._i].titulo=v.trim(); markDirty(); renderGrid(); }}); };
   const sel=document.createElement("select"); (DATA.categorias||[]).forEach(cat=>{ const o=document.createElement("option"); o.value=cat; o.textContent=cat; if(cat===f.categoria)o.selected=true; sel.appendChild(o); });
   sel.onclick=e=>e.stopPropagation(); sel.onchange=()=>{ DATA.fotos[f._i].categoria=sel.value; markDirty(); renderGrid(); };
   const del=document.createElement("button"); del.textContent="Excluir"; del.onclick=e=>{ e.stopPropagation(); removePhoto(f._i); };
-  ec.appendChild(sel); ec.appendChild(del); tile.appendChild(ec);
+  ec.appendChild(bl); ec.appendChild(br); ec.appendChild(rn); ec.appendChild(sel); ec.appendChild(del); tile.appendChild(ec);
   tile.onclick=()=>openLightbox(pos);
   if(document.body.classList.contains("editing")){
     tile.draggable=true;
@@ -712,13 +768,13 @@ document.addEventListener("keydown",e=>{ if(!document.getElementById("lightbox")
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),3300); }
 function markDirty(){ dirty=true; updateStatus(); }
 function enterEditor(){ document.body.classList.add("editor-active"); loadCreds(); if(gh.token&&gh.owner&&gh.repo)verifyConnection(); else openConnect(); }
-function exitEditor(){ if(dirty&&!confirm("Há alterações não publicadas. Sair mesmo assim?"))return; document.body.classList.remove("editor-active","editing"); history.replaceState(null,"",location.pathname); renderGrid(); }
+function exitEditor(){ if(dirty&&!confirm("Há alterações não publicadas. Sair mesmo assim?"))return; document.body.classList.remove("editor-active","editing"); history.replaceState(null,"",location.pathname); renderFilters(); renderGrid(); }
 const inpOwner=document.getElementById("inpOwner"),inpRepo=document.getElementById("inpRepo"),inpBranch=document.getElementById("inpBranch"),inpToken=document.getElementById("inpToken");
 function loadCreds(){ try{ Object.assign(gh,JSON.parse(localStorage.getItem("alv_gh")||"{}")); }catch(e){} if(gh.owner)inpOwner.value=gh.owner; if(gh.repo)inpRepo.value=gh.repo; if(gh.branch)inpBranch.value=gh.branch; if(gh.token)inpToken.value=gh.token; }
 function saveCreds(){ localStorage.setItem("alv_gh",JSON.stringify({owner:gh.owner,repo:gh.repo,branch:gh.branch,token:gh.token})); }
 function updateStatus(){ const st=document.getElementById("edStatus"),tx=document.getElementById("edStatusText");
   if(gh.connected){ st.classList.add("ok"); tx.textContent=(dirty?"Alterações pendentes · ":"Conectado · ")+gh.owner+"/"+gh.repo; document.body.classList.add("editing"); }
-  else{ st.classList.remove("ok"); tx.textContent="Não conectado"; document.body.classList.remove("editing"); } renderGrid(); }
+  else{ st.classList.remove("ok"); tx.textContent="Não conectado"; document.body.classList.remove("editing"); } renderFilters(); renderGrid(); }
 function openConnect(){ document.getElementById("connectModal").classList.add("open"); }
 function closeConnect(){ document.getElementById("connectModal").classList.remove("open"); }
 document.getElementById("connectClose").onclick=closeConnect; document.getElementById("connectCancel").onclick=closeConnect;
@@ -743,7 +799,7 @@ async function handleFiles(files){ if(!gh.connected){ toast("Conecte-se ao GitHu
     try{ const b64=await fileToBase64(file); const safe=uniqueName(file.name); const path="fotos/"+safe;
       const r=await ghFetch("/repos/"+gh.owner+"/"+gh.repo+"/contents/"+path,{ method:"PUT", body:JSON.stringify({message:"Adiciona foto "+safe,content:b64,branch:gh.branch}) });
       if(!r.ok){ const j=await r.json().catch(()=>({})); throw new Error(j.message||("HTTP "+r.status)); }
-      DATA.fotos.push({arquivo:path,categoria:(DATA.categorias&&DATA.categorias[0])||"Fotografias",titulo:prettyName(file.name)});
+      DATA.fotos.push({arquivo:path,categoria:((DATA.categorias||[]).includes(currentFilter)?currentFilter:((DATA.categorias||[])[0]||"Fotografias")),titulo:prettyName(file.name)});
       line.textContent="✓ "+file.name+" — enviada"; markDirty();
     }catch(err){ line.textContent="✕ "+file.name+" — "+err.message; } }
   renderGrid(); setTimeout(()=>dz.classList.remove("show"),1200); toast("Fotos enviadas. Clique em “Publicar alterações”."); }
@@ -755,6 +811,46 @@ async function removePhoto(i){ const f=DATA.fotos[i]; if(!f)return; if(!confirm(
   if(gh.connected&&f.arquivo.startsWith("fotos/")){ try{ const g=await ghFetch("/repos/"+gh.owner+"/"+gh.repo+"/contents/"+f.arquivo+"?ref="+gh.branch);
     if(g.ok){ const j=await g.json(); await ghFetch("/repos/"+gh.owner+"/"+gh.repo+"/contents/"+f.arquivo,{method:"DELETE",body:JSON.stringify({message:"Remove foto "+f.arquivo,sha:j.sha,branch:gh.branch})}); } }catch(e){} }
   DATA.fotos.splice(i,1); markDirty(); renderGrid(); toast("Foto removida. Publique para confirmar."); }
+/* ---- modal de entrada genérico ---- */
+let _imGo=null;
+function openInput(o){ document.getElementById("imTitle").textContent=o.title||"Nome";
+  document.getElementById("imSub").textContent=o.sub||""; document.getElementById("imLabel").textContent=o.label||"Nome";
+  const inp=document.getElementById("imInput"); inp.value=o.value||"";
+  document.getElementById("imGo").textContent=o.go||"Salvar"; _imGo=o.onGo||null;
+  document.getElementById("inputModal").classList.add("open"); setTimeout(()=>inp.focus(),60); }
+function closeInput(){ document.getElementById("inputModal").classList.remove("open"); _imGo=null; }
+document.getElementById("imClose").onclick=closeInput;
+document.getElementById("imCancel").onclick=closeInput;
+document.getElementById("imGo").onclick=()=>{ const v=document.getElementById("imInput").value; const f=_imGo; closeInput(); if(f)f(v); };
+document.getElementById("imInput").addEventListener("keydown",e=>{ if(e.key==="Enter")document.getElementById("imGo").click(); });
+
+/* ---- excluir seção: confirmação em 2 etapas + cronômetro ---- */
+let dsTimer=null;
+function dsReset(){ if(dsTimer){clearInterval(dsTimer);dsTimer=null;}
+  document.getElementById("dsA1").style.display="flex"; document.getElementById("dsA2").style.display="none";
+  document.getElementById("dsCount").style.display="none"; }
+function closeDelSec(){ dsReset(); document.getElementById("delSecModal").classList.remove("open"); }
+document.getElementById("btnDelSec").onclick=()=>{ const sec=currentFilter;
+  if(!(DATA.categorias||[]).includes(sec))return;
+  if(DATA.categorias.length<=1){ toast("É preciso ter ao menos uma seção."); return; }
+  dsReset(); document.getElementById("dsText").textContent="Você tem certeza que quer excluir a seção “"+sec+"”?";
+  document.getElementById("delSecModal").classList.add("open"); };
+document.getElementById("dsClose").onclick=closeDelSec;
+document.getElementById("dsNao").onclick=closeDelSec;
+document.getElementById("dsCancel2").onclick=closeDelSec;
+document.getElementById("dsSim").onclick=()=>{ document.getElementById("dsA1").style.display="none";
+  document.getElementById("dsText").textContent="Você irá perder todas as fotos dessa seção.";
+  const c=document.getElementById("dsCount"); let n=5; c.textContent=n; c.style.display="block";
+  dsTimer=setInterval(()=>{ n--; if(n>0){ c.textContent=n; }
+    else{ clearInterval(dsTimer); dsTimer=null; c.style.display="none";
+      document.getElementById("dsA2").style.display="flex"; } },1000); };
+document.getElementById("dsConfirm").onclick=()=>{ const sec=currentFilter;
+  DATA.fotos=(DATA.fotos||[]).filter(f=>f.categoria!==sec);
+  DATA.categorias=(DATA.categorias||[]).filter(c=>c!==sec);
+  currentFilter=DATA.categorias[0]||"Fotografias";
+  markDirty(); closeDelSec(); renderFilters(); renderGrid();
+  toast("Seção excluída daqui. Clique em Publicar para valer no site."); };
+
 function reorder(from,toIdx){ if(from===toIdx)return; const arr=DATA.fotos; const [item]=arr.splice(from,1); let t=toIdx>from?toIdx-1:toIdx; if(t<0)t=0; if(t>arr.length)t=arr.length; arr.splice(t,0,item); markDirty(); renderGrid(); }
 document.getElementById("btnPublish").onclick=publish;
 async function publish(){ if(!gh.connected){ toast("Conecte-se primeiro."); return; } if(!dirty){ toast("Nada para publicar."); return; }
