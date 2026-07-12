@@ -55,41 +55,71 @@
       "titulo": "Safra 2025 vila botané"
     },
     {
-      "arquivo": "fotos/foto-13.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Safra 2025 Vila Botané"
-    },
-    {
       "arquivo": "fotos/foto-19.jpg",
       "categoria": "Fotografias",
       "titulo": "Folha de videira"
     },
     {
+      "arquivo": "fotos/foto-13.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Safra 2025 Vila Botané"
+    },
+    {
       "arquivo": "fotos/foto-17.jpg",
       "categoria": "Fotografias",
-      "titulo": "Gastronomia, Casa do Lago Bistrô"
+      "titulo": "Gastronomia, Casa do Lago"
     },
     {
       "arquivo": "fotos/foto-05.jpg",
       "categoria": "Fotografias",
-      "titulo": "Gastronomia, Casa do Lago Bistrô",
+      "titulo": "Gastronomia, Casa do Lago",
       "dupla": "a"
     },
     {
       "arquivo": "fotos/foto-10.jpg",
       "categoria": "Fotografias",
-      "titulo": "Gastronomia, Casa do Lago Bistrô",
+      "titulo": "Gastronomia, Casa do Lago",
       "dupla": "a"
+    },
+    {
+      "arquivo": "fotos/img-4637-mrht81xt.jpeg",
+      "categoria": "Fotografias",
+      "titulo": "Gastronomia, Casa do Lago"
+    },
+    {
+      "arquivo": "fotos/img-3583-mrht87l9.jpeg",
+      "categoria": "Fotografias",
+      "titulo": "Gastronomia, Casa do Lago"
+    },
+    {
+      "arquivo": "fotos/img-1599-vsco-mrht85o4.jpeg",
+      "categoria": "Fotografias",
+      "titulo": "Gastronomia, Casa do Lago"
     },
     {
       "arquivo": "fotos/foto-02.jpg",
       "categoria": "Fotografias",
-      "titulo": "Gastronomia, Casa do Lago Bistrô"
+      "titulo": "Gastronomia, Casa do Lago"
+    },
+    {
+      "arquivo": "fotos/img-1140-vsco-vsco-mrht8cbf.jpeg",
+      "categoria": "Fotografias",
+      "titulo": "Gastronomia, Casa do Lago"
     },
     {
       "arquivo": "fotos/foto-14.jpg",
       "categoria": "Fotografias",
-      "titulo": "Mesa posta"
+      "titulo": "Mesa posta, Casa do Lago"
+    },
+    {
+      "arquivo": "fotos/img-3408-vsco-mrht8avd.jpeg",
+      "categoria": "Fotografias",
+      "titulo": "Gastronomia, Casa do Lago"
+    },
+    {
+      "arquivo": "fotos/img-3446-mrht89nk.jpeg",
+      "categoria": "Fotografias",
+      "titulo": "Gastronomia, Casa do Lago"
     },
     {
       "arquivo": "fotos/foto-08.jpg",
@@ -164,36 +194,6 @@
       "titulo": "Arte em barro"
     },
     {
-      "arquivo": "fotos/foto-30.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Dois Lados da Mesma Linha, Galeria Aecio Sarti"
-    },
-    {
-      "arquivo": "fotos/foto-32.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Homens em Paletós Estampados, Galeria Aercio Sarti"
-    },
-    {
-      "arquivo": "fotos/foto-22.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Mar de esmeralda"
-    },
-    {
-      "arquivo": "fotos/foto-33.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Urca em Âmbar"
-    },
-    {
-      "arquivo": "fotos/foto-26.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Sombras Cariocas"
-    },
-    {
-      "arquivo": "fotos/foto-34.jpg",
-      "categoria": "Fotografias",
-      "titulo": "Veias de Madeira"
-    },
-    {
       "arquivo": "fotos/foto-35.jpg",
       "categoria": "Obras",
       "titulo": "Reprodução: Terrasse du café Le Soir, Van Gogh. Óleo sobre tela"
@@ -232,6 +232,101 @@
       "arquivo": "fotos/foto-42.jpg",
       "categoria": "Obras",
       "titulo": "Sob o céu de Ipanema, óleo sobre tela"
+    },
+    {
+      "arquivo": "fotos/foto-30.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Dois Lados da Mesma Linha, Galeria Aecio Sarti"
+    },
+    {
+      "arquivo": "fotos/foto-32.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Homens em Paletós Estampados, Galeria Aercio Sarti"
+    },
+    {
+      "arquivo": "fotos/foto-22.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Mar de esmeralda"
+    },
+    {
+      "arquivo": "fotos/foto-33.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Urca em Âmbar"
+    },
+    {
+      "arquivo": "fotos/foto-26.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Sombras Cariocas"
+    },
+    {
+      "arquivo": "fotos/foto-34.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Veias de Madeira"
+    },
+    {
+      "arquivo": "fotos/img-5594-mrhsddsn.png",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/vindima-vila-botane-2026-2-mrhsepxx.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/img-5431-mrhsehzt.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/vindima-vila-botane-2026-mrhsejhr.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/vindima-vila-botane-2026-3-mrhseya6.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/img-5467-mrhseg64.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/img-5558-mrhse411.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/img-5423-mrhsenf3.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/img-5422-mrhsekl1.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/img-5465-mrhserkk.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/img-5433-mrhseul9.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/vindima-vila-botane-2026-mrhsf0f9.jpg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
+    },
+    {
+      "arquivo": "fotos/img-5434-mrhsyoe6.jpeg",
+      "categoria": "Fotografias",
+      "titulo": "Vindima, Vila Botané 2026"
     }
   ]
 }
